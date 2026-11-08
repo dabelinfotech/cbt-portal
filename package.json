@@ -1,0 +1,20 @@
+{
+  "name": "jamb-utme-cbt-portal",
+  "version": "2.1.0",
+  "description": "Standard JAMB UTME Computer-Based Test (CBT) Portal with Separated Frontend (Port 3000) & Admin Backend (Port 4000)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:frontend": "node frontend-server.js",
+    "start:backend": "node backend-server.js"
+  },
+  "keywords": [
+    "JAMB",
+    "UTME",
+    "CBT",
+    "Portal",
+    "Admin",
+    "PIN-Generator"
+  ],
+  "license": "MIT"
+}

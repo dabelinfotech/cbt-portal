@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JAMB UTME Standard CBT Portal | Unified Tertiary Matriculation Examination</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- TOP OFFICIAL HEADER BAR -->
+  <header class="portal-header" id="portalHeader">
+    <div class="header-brand">
+      <div class="jamb-crest" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="38" height="38" fill="none">
+          <circle cx="24" cy="24" r="22" fill="#006837" stroke="#eab308" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="17" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2"/>
+          <path d="M14 29L24 13L34 29H14Z" fill="#eab308" opacity="0.9"/>
+          <rect x="17" y="25" width="14" height="9" rx="1.5" fill="#ffffff"/>
+          <path d="M24 25V34" stroke="#006837" stroke-width="1.5"/>
+          <circle cx="24" cy="19" r="3" fill="#ffffff"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <div class="brand-badge-row">
+          <span class="official-pill">OFFICIAL UTME STANDARD</span>
+          <span class="cbt-version">CBT ENGINE v2026.4</span>
+        </div>
+        <h1>JOINT ADMISSIONS AND MATRICULATION BOARD (JAMB)</h1>
+        <p>Unified Tertiary Matriculation Examination (UTME) — Computer Based Test Portal</p>
+      </div>
+    </div>
+
+    <!-- ACTIVE EXAM HEADER CONTROLS (Visible during exam) -->
+    <div class="exam-live-bar hidden" id="examLiveBar">
+      <div class="variant-pill-box" id="examVariantBadge" title="Unique Candidate Randomized Paper Variant">
+        <span>🔀 PAPER SET:</span>
+        <strong id="examVariantCodeText">SET-A104-S042</strong>
+      </div>
+
+      <div class="timer-widget" id="timerWidget" title="Time Remaining">
+        <span class="timer-label">TIME LEFT</span>
+        <span class="timer-digits" id="examTimerDisplay">02:00:00</span>
+      </div>
+
+      <div class="exam-Action-tools">
+        <button type="button" class="tool-btn" id="btnOpenCalculator" title="Open CBT Calculator (Shortcut: C)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <line x1="8" y1="6" x2="16" y2="6"/>
+            <line x1="8" y1="10" x2="8" y2="10.01"/>
+            <line x1="12" y1="10" x2="12" y2="10.01"/>
+            <line x1="16" y1="10" x2="16" y2="10.01"/>
+            <line x1="8" y1="14" x2="8" y2="14.01"/>
+            <line x1="12" y1="14" x2="12" y2="14.01"/>
+            <line x1="16" y1="14" x2="16" y2="14.01"/>
+            <line x1="8" y1="18" x2="8" y2="18.01"/>
+            <line x1="12" y1="18" x2="16" y2="18"/>
+          </svg>
+          <span>Calculator</span>
+        </button>
+
+        <button type="button" class="tool-btn" id="btnFontSize" title="Toggle Question Text Size">
+          <span>Aa</span>
+        </button>
+
+        <button type="button" class="btn-submit-exam" id="btnHeaderSubmit">
+          <span>Submit Exam (S)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- NON-EXAM NAV TOOLS (STUDENT ONLY — NO ADMIN TAB) -->
+    <div class="header-nav-actions" id="headerNavActions">
+      <button type="button" class="ghost-header-btn" id="btnOpenQuestionBank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span>Syllabus & Past Questions</span>
+      </button>
+      <button type="button" class="ghost-header-btn" id="btnOpenHistory">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>Past Attempts</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="portal-main">
+    <!-- ===================================================================
+         SCREEN 1: CANDIDATE LOGIN & SUBJECT COMBINATION SELECTION
+         =================================================================== -->
+    <section class="screen-view active" id="screenSetup">
+      <!-- RESUME UNFINISHED EXAM BANNER (Shown automatically if a saved session exists) -->
+      <div class="resume-session-banner hidden" id="resumeSessionBanner">
+        <div class="resume-banner-text">
+          <strong>⚡ Unfinished UTME Examination Detected!</strong>
+          <span id="resumeSessionDetails">You have an active examination session saved in progress.</span>
+        </div>
+        <div class="resume-banner-actions">
+          <button type="button" class="btn-primary-action" id="btnResumeSavedExam">Resume Examination</button>
+          <button type="button" class="btn-secondary" id="btnDiscardSavedExam">Discard & Start Fresh</button>
+        </div>
+      </div>
+
+      <div class="setup-grid">
+        <!-- LEFT COLUMN: CANDIDATE ACCREDITATION & EXAM SETTINGS -->
+        <div class="card candidate-login-card">
+          <div class="card-header">
+            <span class="step-badge">STEP 1</span>
+            <div>
+              <h2>Candidate Accreditation & Verification</h2>
+              <p>Enter your JAMB Registration Number or load a pre-registered candidate profile</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="candidate-preview-box">
+              <div class="candidate-avatar" id="candidateAvatar">
+                <span id="candidateInitials">AD</span>
+                <span class="biometric-verified" title="Thumbprint Verified">✓ Biometric OK</span>
+              </div>
+              <div class="candidate-meta">
+                <div class="reg-pill" id="previewRegNo">2026408912BA</div>
+                <h3 id="previewCandidateName">ADEBAYO DANIEL OLUWASEUN</h3>
+                <p id="previewCenterName">Center: 02408 — UNILAG CBT Centre, Akoka, Lagos</p>
+                <p id="previewSeatNo">Seat No: <strong>042</strong> | Session: <strong>Morning Batch A</strong></p>
+              </div>
+            </div>
+
+            <div class="quick-demo-profiles">
+              <span class="small-label">Quick Demo Candidates (With Pre-Generated PINs):</span>
+              <div class="demo-chip-row">
+                <button type="button" class="demo-chip active" data-profile="science_med">Medicine (Sci)</button>
+                <button type="button" class="demo-chip" data-profile="science_eng">Engineering (Sci)</button>
+                <button type="button" class="demo-chip" data-profile="art_law">Law (Arts)</button>
+                <button type="button" class="demo-chip" data-profile="comm_acct">Accounting (Comm)</button>
+              </div>
+            </div>
+
+            <!-- STUDENT EXAMINATION ACCESS PIN BOX -->
+            <div class="pin-accreditation-box">
+              <div class="form-group mb-6">
+                <label for="inputExamPin">
+                  🔑 Student Examination Access PIN <span class="pin-req-tag" id="pinReqBadge">REQUIRED</span>
+                </label>
+                <div class="pin-input-row">
+                  <input type="text" id="inputExamPin" value="UTME-4829-7310" placeholder="Enter your UTME PIN (e.g. UTME-4829-7310)" maxlength="18" />
+                  <button type="button" class="btn-verify-pin" id="btnVerifyPinNow">Verify PIN</button>
+                </div>
+              </div>
+              <div class="pin-status-banner valid" id="pinStatusBanner">
+                ✓ Valid Student PIN loaded • Unique Question Scatter Seed Assigned
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputRegNumber">JAMB Registration Number</label>
+              <input type="text" id="inputRegNumber" value="2026408912BA" placeholder="e.g. 2026408912BA" maxlength="14" />
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="inputCandidateName">Candidate Full Name</label>
+                <input type="text" id="inputCandidateName" value="ADEBAYO DANIEL OLUWASEUN" placeholder="SURNAME FIRSTNAME OTHERNAME" />
+              </div>
+              <div class="form-group">
+                <label for="inputSeatNo">Seat No.</label>
+                <input type="text" id="inputSeatNo" value="042" maxlength="4" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="selectTargetInstitution">Preferred Institution & Faculty Target</label>
+              <select id="selectTargetInstitution">
+                <option value="UNILAG">University of Lagos (UNILAG) — Cut-off: 200+</option>
+                <option value="UI">University of Ibadan (UI) — Cut-off: 200+</option>
+                <option value="OAU">Obafemi Awolowo University (OAU) — Cut-off: 200+</option>
+                <option value="UNILORIN">University of Ilorin (UNILORIN) — Cut-off: 190+</option>
+                <option value="ABU">Ahmadu Bello University (ABU Zaria) — Cut-off: 180+</option>
+                <option value="UNN">University of Nigeria, Nsukka (UNN) — Cut-off: 200+</option>
+                <option value="FUTA">Federal University of Technology, Akure (FUTA) — Cut-off: 180+</option>
+                <option value="CU">Covenant University, Ota — Cut-off: 190+</option>
+                <option value="LASU">Lagos State University (LASU) — Cut-off: 190+</option>
+              </select>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="exam-config-section">
+              <h3>Examination Mode & Paper Structure</h3>
+              <div class="mode-selector-grid">
+                <label class="mode-card selected" id="modeCardStandard">
+                  <input type="radio" name="examStructureMode" value="standard_180" checked />
+                  <div class="mode-card-title">
+                    <strong>Full Standard UTME</strong>
+                    <span class="mode-tag">180 Questions</span>
+                  </div>
+                  <p>60 Use of English + 40 × 3 Subjects • 120 Mins • Scored /400</p>
+                </label>
+
+                <label class="mode-card" id="modeCardMock60">
+                  <input type="radio" name="examStructureMode" value="mock_60" />
+                  <div class="mode-card-title">
+                    <strong>Rapid UTME Mock</strong>
+                    <span class="mode-tag">60 Questions</span>
+                  </div>
+                  <p>15 Questions per Subject × 4 • 45 Mins • Scored /400</p>
+                </label>
+
+                <label class="mode-card" id="modeCardStudy40">
+                  <input type="radio" name="examStructureMode" value="study_40" />
+                  <div class="mode-card-title">
+                    <strong>Interactive Study Mode</strong>
+                    <span class="mode-tag">Instant Solution</span>
+                  </div>
+                  <p>10 Questions per Subject + Check Answer & Explanation Live</p>
+                </label>
+              </div>
+
+              <div class="form-row-2 mt-12">
+                <div class="form-group">
+                  <label for="selectYearFilter">UTME Past Questions Year Filter</label>
+                  <select id="selectYearFilter">
+                    <option value="ALL">All UTME Past Years (1998 – 2025 Combined)</option>
+                    <option value="2020_2025">Recent UTME Past Questions (2020 – 2025)</option>
+                    <option value="2015_2019">2015 – 2019 UTME Past Questions</option>
+                    <option value="2010_2014">2010 – 2014 UTME Past Questions</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="selectCustomDuration">Custom Duration Override</label>
+                  <select id="selectCustomDuration">
+                    <option value="AUTO">Standard Default (120 Mins for Full UTME)</option>
+                    <option value="120">2 Hours (120 Minutes)</option>
+                    <option value="90">1 Hour 30 Mins (90 Minutes)</option>
+                    <option value="60">1 Hour (60 Minutes)</option>
+                    <option value="45">45 Minutes</option>
+                    <option value="30">30 Minutes (Speed Drill)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: OFFICIAL JAMB 4-SUBJECT SELECTION PATTERN -->
+        <div class="card subject-selection-card">
+          <div class="card-header">
+            <span class="step-badge">STEP 2</span>
+            <div>
+              <h2>UTME 4-Subject Combination Pattern</h2>
+              <p><strong>Use of English is compulsory.</strong> Select your course preset or pick <strong>any 3 additional UTME subjects</strong>.</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- COURSE BROCHURE AUTO-SELECTOR -->
+            <div class="brochure-preset-bar">
+              <div class="form-group mb-0">
+                <label for="selectCoursePreset">
+                  <span>🎓 Official JAMB Brochure Course Combination Auto-Selector:</span>
+                </label>
+                <select id="selectCoursePreset">
+                  <option value="med_surg">Medicine & Surgery / Nursing / Pharmacy / Dentistry (Eng, Bio, Chem, Phy)</option>
+                  <option value="eng_tech">Engineering / Computer Science / Architecture (Eng, Maths, Phy, Chem)</option>
+                  <option value="biochem_micro">Biochemistry / Microbiology / Agriculture (Eng, Bio, Chem, Maths/Phy)</option>
+                  <option value="law">Law / Jurisprudence (Eng, Lit-in-English, Government, CRS)</option>
+                  <option value="mass_comm">Mass Communication / Journalism / International Relations (Eng, Lit, Govt, Econ)</option>
+                  <option value="accounting_bus">Accounting / Business Admin / Banking & Finance (Eng, Maths, Econ, Accounts)</option>
+                  <option value="economics">Economics / Public Administration (Eng, Maths, Econ, Government)</option>
+                  <option value="comp_info">Cybersecurity / Data Science / IT (Eng, Maths, Phy, Computer Studies)</option>
+                  <option value="arts_hum">English & Literary Studies / Theatre Arts (Eng, Lit-in-English, Govt, History)</option>
+                  <option value="env_geo">Geography / Urban & Regional Planning / Geology (Eng, Maths, Geo, Chem)</option>
+                  <option value="custom">Custom Combination (Manually Pick 3 Subjects Below)</option>
+                </select>
+              </div>
+              <div class="brochure-note" id="brochureCourseNotice">
+                <strong>Brochure Requirement:</strong> Medicine & Surgery requires Use of English, Biology, Chemistry, and Physics. Departmental Cut-off benchmark: <strong>270 - 310 / 400</strong>.
+              </div>
+            </div>
+
+            <!-- SELECTED 4-SUBJECT SLOTS -->
+            <div class="selected-slots-banner">
+              <div class="slots-header">
+                <span>Your Registered 4 UTME Subjects (<strong id="selectedCountLabel">4 / 4</strong> Selected)</span>
+                <span class="total-marks-pill">Total Score Weight: 400 Marks (100 Marks Each)</span>
+              </div>
+              <div class="selected-slots-row" id="selectedSlotsContainer">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+
+            <!-- SUBJECT CATEGORY TABS / FILTER -->
+            <div class="subject-category-filter">
+              <button type="button" class="cat-filter-btn active" data-cat="ALL">All UTME Subjects (19)</button>
+              <button type="button" class="cat-filter-btn" data-cat="COMPULSORY">Compulsory (1)</button>
+              <button type="button" class="cat-filter-btn" data-cat="SCIENCE">Sciences & Maths (7)</button>
+              <button type="button" class="cat-filter-btn" data-cat="COMMERCIAL">Commercial & Social Sci (5)</button>
+              <button type="button" class="cat-filter-btn" data-cat="ARTS">Arts & Humanities (6)</button>
+            </div>
+
+            <!-- ALL UTME SUBJECTS SELECTION GRID -->
+            <div class="subjects-checkbox-grid" id="subjectsCheckboxGrid">
+              <!-- Populated dynamically from subjects-config.js -->
+            </div>
+
+            <!-- VALIDATION & PROCEED FOOTER -->
+            <div class="setup-action-footer">
+              <div class="validation-status valid" id="subjectValidationStatus">
+                <span class="status-icon">✓</span>
+                <span id="validationMessageText">Valid UTME 4-subject combination selected. Ready to proceed.</span>
+              </div>
+
+              <button type="button" class="btn-primary-large" id="btnProceedInstructions">
+                <span>Proceed to Accreditation & Exam Instructions</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dabeltech-page-footer">
+        <span>Powered by <strong>DABELTECH</strong></span>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 2: PRE-EXAM INSTRUCTIONS & KEYBOARD SHORTCUT BRIEFING
+         =================================================================== -->
+    <section class="screen-view" id="screenInstructions">
+      <div class="instructions-container">
+        <div class="card instructions-card">
+          <div class="card-header instructions-header">
+            <div>
+              <span class="step-badge">STEP 3 — EXAMINATION BRIEFING</span>
+              <h2>UTME Computer-Based Test (CBT) Candidate Briefing</h2>
+              <p>Read all instructions carefully before clicking "Start UTME Examination"</p>
+            </div>
+            <button type="button" class="btn-secondary" id="btnBackToSetup">
+              ← Change Subject Combination
+            </button>
+          </div>
+
+          <div class="card-body instructions-body">
+            <div class="briefing-summary-grid" id="briefingSummaryGrid">
+              <!-- Populated dynamically with candidate info + 4 subjects breakdown -->
+            </div>
+
+            <div class="rules-and-keys-grid">
+              <div class="rules-panel">
+                <h3>📋 Standard JAMB UTME Examination Rules</h3>
+                <ul class="jamb-rules-list">
+                  <li>
+                    <strong>4-Subject Structure:</strong> Your examination consists of <strong>Use of English (Compulsory)</strong> and your <strong>3 chosen subjects</strong>. You can switch freely between any of the 4 subjects at any time using the subject tabs at the top.
+                  </li>
+                  <li>
+                    <strong>Scoring System (400 Marks):</strong> Each of the 4 subjects is scaled to <strong>100 Marks</strong> regardless of whether it contains 60 questions (Use of English) or 40 questions (other subjects), giving an aggregate score out of <strong>400</strong>.
+                  </li>
+                  <li>
+                    <strong>No Negative Marking:</strong> There is no penalty for wrong answers in JAMB UTME. Attempt all questions before submitting.
+                  </li>
+                  <li>
+                    <strong>Auto-Save Protection:</strong> Every option you select is automatically saved in real time. Even if your browser refreshes, your progress and timer state are preserved.
+                  </li>
+                  <li>
+                    <strong>Comprehension & Literature Texts:</strong> In Use of English, comprehension passages, cloze registers, and questions from prescribed JAMB novels (<em>The Life Changer</em> / <em>The Lekki Headmaster</em>) are included.
+                  </li>
+                </ul>
+              </div>
+
+              <div class="keys-panel">
+                <h3>⌨️ Official JAMB 8-Key CBT Keyboard Shortcuts</h3>
+                <p class="keys-subtitle">You may use either your mouse or these standard JAMB CBT keys:</p>
+                <div class="key-shortcuts-grid">
+                  <div class="key-item"><kbd>A</kbd> <span>Select Option A</span></div>
+                  <div class="key-item"><kbd>B</kbd> <span>Select Option B</span></div>
+                  <div class="key-item"><kbd>C</kbd> <span>Select Option C</span></div>
+                  <div class="key-item"><kbd>D</kbd> <span>Select Option D</span></div>
+                  <div class="key-item"><kbd>N</kbd> or <kbd>→</kbd> <span>Next Question</span></div>
+                  <div class="key-item"><kbd>P</kbd> or <kbd>←</kbd> <span>Previous Question</span></div>
+                  <div class="key-item"><kbd>R</kbd> <span>Reverse / Clear Choice</span></div>
+                  <div class="key-item"><kbd>F</kbd> <span>Flag / Bookmark Question</span></div>
+                  <div class="key-item"><kbd>S</kbd> <span>End & Submit Exam</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="start-exam-banner">
+              <label class="consent-checkbox">
+                <input type="checkbox" id="chkConfirmDetails" checked />
+                <span>I confirm that my Registration Number, Name, and <strong>4 UTME Subject Combination</strong> displayed above are accurate.</span>
+              </label>
+              <button type="button" class="btn-start-utme" id="btnStartExamNow">
+                <span>START UTME EXAMINATION NOW</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 3: LIVE JAMB UTME CBT EXAMINATION INTERFACE
+         =================================================================== -->
+    <section class="screen-view" id="screenExam">
+      <!-- 4 SUBJECT TABS BAR -->
+      <div class="subject-tabs-bar" id="examSubjectTabs" role="tablist" aria-label="Registered UTME Subjects">
+        <!-- Populated dynamically with the 4 selected subjects -->
+      </div>
+
+      <div class="exam-workspace-grid">
+        <!-- LEFT / MAIN: QUESTION DISPLAY & OPTIONS -->
+        <div class="question-main-panel">
+          <!-- QUESTION META HEADER -->
+          <div class="question-top-strip">
+            <div class="question-counter-group">
+              <span class="active-subject-pill" id="activeSubjectBadge">USE OF ENGLISH</span>
+              <span class="question-index-label" id="questionIndexLabel">Question 1 of 60</span>
+              <span class="utme-year-badge" id="questionYearBadge">UTME 2023</span>
+              <span class="topic-tag-badge" id="questionTopicBadge">Lexis & Structure</span>
+            </div>
+            <div class="question-status-actions">
+              <button type="button" class="btn-flag-question" id="btnFlagCurrent" title="Bookmark/Flag this question for review (Shortcut: F)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                  <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+                <span id="flagBtnText">Flag for Review (F)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SCROLLABLE QUESTION & OPTIONS BODY -->
+          <div class="question-body-scroll" id="questionBodyScroll">
+            <!-- SECTION / INSTRUCTION BANNER -->
+            <div class="question-instruction-box" id="questionInstructionBox">
+              Choose the option that best completes the gap(s) or answers the question below.
+            </div>
+
+            <!-- COMPREHENSION / CLOZE PASSAGE BOX (Shown only when question has a passage) -->
+            <div class="comprehension-passage-box hidden" id="comprehensionPassageBox">
+              <div class="passage-header">
+                <strong id="passageTitleText">COMPREHENSION PASSAGE</strong>
+                <button type="button" class="btn-toggle-passage" id="btnTogglePassage">Collapse Passage</button>
+              </div>
+              <div class="passage-content" id="passageContentText"></div>
+            </div>
+
+            <!-- QUESTION STEM -->
+            <div class="question-stem-text" id="questionStemText">
+              Loading question...
+            </div>
+
+            <!-- OPTIONS A, B, C, D -->
+            <div class="options-list-container" id="optionsListContainer" role="radiogroup" aria-label="Question Options">
+              <!-- Populated dynamically -->
+            </div>
+
+            <!-- STUDY MODE INSTANT EXPLANATION BOX (Only in Study Mode or when revealed) -->
+            <div class="study-feedback-panel hidden" id="studyFeedbackPanel">
+              <div class="study-feedback-header" id="studyFeedbackHeader"></div>
+              <div class="study-feedback-body" id="studyFeedbackBody"></div>
+            </div>
+          </div>
+
+          <!-- BOTTOM NAVIGATION BAR (PREVIOUS, NEXT, CLEAR, STUDY SOLUTION) -->
+          <div class="question-bottom-nav">
+            <div class="nav-left-group">
+              <button type="button" class="btn-cbt-nav" id="btnPrevQuestion" title="Shortcut: P or Left Arrow">
+                <span>← Previous (P)</span>
+              </button>
+              <button type="button" class="btn-cbt-clear" id="btnClearOption" title="Shortcut: R">
+                <span>Clear Choice (R)</span>
+              </button>
+              <button type="button" class="btn-cbt-study hidden" id="btnShowStudyAnswer">
+                <span>💡 Show Solution & Explanation</span>
+              </button>
+            </div>
+
+            <div class="keyboard-hint-strip">
+              Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer • <kbd>N</kbd> Next • <kbd>P</kbd> Prev • <kbd>F</kbd> Flag
+            </div>
+
+            <div class="nav-right-group">
+              <button type="button" class="btn-cbt-nav btn-cbt-next" id="btnNextQuestion" title="Shortcut: N or Right Arrow">
+                <span>Next (N) →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR: CANDIDATE BIO + QUESTION PALETTE GRID -->
+        <aside class="exam-sidebar-panel">
+          <!-- MINI CANDIDATE CARD -->
+          <div class="sidebar-candidate-box">
+            <div class="sidebar-avatar" id="examSidebarInitials">AD</div>
+            <div class="sidebar-cand-details">
+              <strong id="examSidebarName">ADEBAYO DANIEL O.</strong>
+              <span id="examSidebarReg">Reg: 2026408912BA • Seat 042</span>
+            </div>
+          </div>
+
+          <!-- OVERALL PROGRESS ACROSS ALL 4 SUBJECTS -->
+          <div class="overall-progress-card">
+            <div class="progress-title-row">
+              <span>Total Exam Progress</span>
+              <strong id="overallAnsweredText">0 / 180 Answered</strong>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="overallProgressBar" style="width: 0%"></div>
+            </div>
+            <div class="palette-legend">
+              <span class="legend-item"><i class="dot answered"></i> Answered (<b id="countSubjectAnswered">0</b>)</span>
+              <span class="legend-item"><i class="dot unanswered"></i> Unanswered (<b id="countSubjectUnanswered">0</b>)</span>
+              <span class="legend-item"><i class="dot flagged"></i> Flagged (<b id="countSubjectFlagged">0</b>)</span>
+            </div>
+          </div>
+
+          <!-- CURRENT SUBJECT NUMBER GRID -->
+          <div class="palette-grid-header">
+            <span id="paletteSubjectTitle">Use of English Grid</span>
+            <div class="palette-quick-jump">
+              <button type="button" class="tiny-link-btn" id="btnJumpFirstUnanswered">Next Unanswered</button>
+            </div>
+          </div>
+
+          <div class="question-number-grid" id="questionNumberGrid">
+            <!-- Buttons 1..60 or 1..40 populated dynamically -->
+          </div>
+
+          <!-- SIDEBAR BOTTOM SUBMIT -->
+          <div class="sidebar-footer-actions">
+            <button type="button" class="btn-sidebar-submit" id="btnSidebarSubmit">
+              <span>End & Submit Examination (S)</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <div class="dabeltech-page-footer">
+        <span>Powered by <strong>DABELTECH</strong></span>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 4: OFFICIAL JAMB UTME RESULT SLIP & CORRECTIONS REVIEW
+         =================================================================== -->
+    <section class="screen-view" id="screenResults">
+      <div class="results-container">
+        <!-- PRINTABLE OFFICIAL RESULT NOTIFICATION SLIP -->
+        <div class="card official-result-slip" id="printableResultSlip">
+          <div class="slip-watermark">JAMB UTME OFFICIAL CBT PORTAL</div>
+
+          <div class="slip-header">
+            <div class="slip-brand-row">
+              <div class="jamb-crest-large">
+                <svg viewBox="0 0 48 48" width="52" height="52" fill="none">
+                  <circle cx="24" cy="24" r="22" fill="#006837" stroke="#eab308" stroke-width="2.5"/>
+                  <path d="M14 29L24 13L34 29H14Z" fill="#eab308"/>
+                  <rect x="17" y="25" width="14" height="9" rx="1.5" fill="#ffffff"/>
+                  <circle cx="24" cy="19" r="3" fill="#ffffff"/>
+                </svg>
+              </div>
+              <div class="slip-titles">
+                <h2>JOINT ADMISSIONS AND MATRICULATION BOARD</h2>
+                <h3>UNIFIED TERTIARY MATRICULATION EXAMINATION (UTME) RESULT NOTIFICATION</h3>
+                <p id="resultSlipTimestamp">Date Taken: —</p>
+              </div>
+              <div class="slip-aggregate-box">
+                <span class="agg-label">AGGREGATE SCORE</span>
+                <strong class="agg-score-value" id="resultAggregateScore">312</strong>
+                <span class="agg-out-of">OUT OF 400</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slip-candidate-grid" id="resultCandidateSummary">
+            <!-- Candidate details populated by JS -->
+          </div>
+
+          <!-- 4-SUBJECT SCORE BREAKDOWN TABLE -->
+          <div class="slip-table-wrapper">
+            <table class="jamb-score-table">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>UTME Subject</th>
+                  <th>Category</th>
+                  <th>Questions</th>
+                  <th>Correct Answers</th>
+                  <th>Standard UTME Score (/100)</th>
+                  <th>Remark</th>
+                </tr>
+              </thead>
+              <tbody id="resultSubjectTableBody">
+                <!-- 4 rows + Aggregate footer row populated by JS -->
+              </tbody>
+              <tfoot>
+                <tr class="aggregate-row">
+                  <td colspan="3"><strong>TOTAL AGGREGATE SCORE</strong></td>
+                  <td id="resultTotalQuestionsCell">180</td>
+                  <td id="resultTotalCorrectCell">0</td>
+                  <td class="aggregate-score-cell" id="resultTotalScaledCell">0 / 400</td>
+                  <td id="resultOverallGradeCell">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ADMISSION CUT-OFF ELIGIBILITY ANALYSIS -->
+          <div class="admission-verdict-banner" id="admissionVerdictBanner">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="dabeltech-slip-brand">
+            <span>Official UTME CBT Result Slip • Powered by <strong>DABELTECH</strong></span>
+          </div>
+
+          <!-- RESULT ACTION BUTTONS (Hidden when printing) -->
+          <div class="result-actions-bar no-print">
+            <button type="button" class="btn-primary-action" id="btnToggleReviewSection">
+              <span>📖 View Complete Question-by-Question Corrections & Explanations</span>
+            </button>
+            <button type="button" class="btn-secondary" id="btnPrintResultSlip">
+              <span>🖨️ Print Official Result Slip</span>
+            </button>
+            <button type="button" class="btn-secondary" id="btnRetakeSameCombo">
+              <span>🔄 Retake Exam (New Randomized Questions)</span>
+            </button>
+            <button type="button" class="btn-secondary" id="btnNewCandidateSetup">
+              <span>🏠 Change Subject Combination</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- DETAILED CORRECTIONS & STEP-BY-STEP EXPLANATIONS SECTION -->
+        <div class="card review-corrections-card" id="reviewCorrectionsSection">
+          <div class="card-header review-header-bar">
+            <div>
+              <h2>Detailed UTME Solutions & Past Questions Review</h2>
+              <p>Review every question, your selected option, the official JAMB answer, and detailed explanation</p>
+            </div>
+            <div class="review-filters">
+              <select id="reviewSubjectFilter">
+                <option value="ALL">All 4 Registered Subjects</option>
+              </select>
+              <select id="reviewStatusFilter">
+                <option value="ALL">All Questions</option>
+                <option value="WRONG">Wrong Answers Only</option>
+                <option value="CORRECT">Correct Answers Only</option>
+                <option value="UNANSWERED">Unanswered / Skipped</option>
+                <option value="FLAGGED">Flagged Questions</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="review-questions-list" id="reviewQuestionsList">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- GLOBAL PORTAL FOOTER -->
+  <footer class="portal-global-footer">
+    <div class="portal-global-footer-inner">
+      <span>JAMB UTME Standard Computer-Based Test (CBT) Portal</span>
+      <span class="dabeltech-badge">Powered by <strong>DABELTECH</strong></span>
+    </div>
+  </footer>
+
+  <!-- ===================================================================
+       MODAL 1: ON-SCREEN CBT CALCULATOR
+       =================================================================== -->
+  <div class="modal-backdrop hidden" id="calculatorModal">
+    <div class="calculator-window" role="dialog" aria-label="JAMB CBT On-Screen Calculator">
+      <div class="calc-header">
+        <span>JAMB CBT Standard Calculator</span>
+        <button type="button" class="calc-close-btn" id="btnCloseCalculator">✕</button>
+      </div>
+      <div class="calc-screen">
+        <div class="calc-expression" id="calcExpression">&nbsp;</div>
+        <input type="text" class="calc-display" id="calcDisplay" value="0" readonly />
+      </div>
+      <div class="calc-keys-grid">
+        <button type="button" class="calc-key fn" data-calc="C">C</button>
+        <button type="button" class="calc-key fn" data-calc="SQRT">√x</button>
+        <button type="button" class="calc-key fn" data-calc="SQR">x²</button>
+        <button type="button" class="calc-key op" data-calc="/">÷</button>
+
+        <button type="button" class="calc-key" data-calc="7">7</button>
+        <button type="button" class="calc-key" data-calc="8">8</button>
+        <button type="button" class="calc-key" data-calc="9">9</button>
+        <button type="button" class="calc-key op" data-calc="*">×</button>
+
+        <button type="button" class="calc-key" data-calc="4">4</button>
+        <button type="button" class="calc-key" data-calc="5">5</button>
+        <button type="button" class="calc-key" data-calc="6">6</button>
+        <button type="button" class="calc-key op" data-calc="-">−</button>
+
+        <button type="button" class="calc-key" data-calc="1">1</button>
+        <button type="button" class="calc-key" data-calc="2">2</button>
+        <button type="button" class="calc-key" data-calc="3">3</button>
+        <button type="button" class="calc-key op" data-calc="+">+</button>
+
+        <button type="button" class="calc-key" data-calc="0">0</button>
+        <button type="button" class="calc-key" data-calc=".">.</button>
+        <button type="button" class="calc-key fn" data-calc="DEL">⌫</button>
+        <button type="button" class="calc-key eq" data-calc="=">=</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL 2: SUBMIT CONFIRMATION DIALOG
+       =================================================================== -->
+  <div class="modal-backdrop hidden" id="submitConfirmModal">
+    <div class="modal-card" role="dialog" aria-labelledby="submitModalTitle">
+      <div class="modal-header">
+        <h3 id="submitModalTitle">Confirm UTME Examination Submission</h3>
+        <button type="button" class="modal-close-btn" id="btnCancelSubmitModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to end your examination and submit your answers for grading?</p>
+        <div class="submit-summary-table-wrap" id="submitModalBreakdown">
+          <!-- Per-subject answered vs unanswered breakdown -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnReturnToExam">← Return to Examination</button>
+        <button type="button" class="btn-danger-submit" id="btnConfirmFinalSubmit">Yes, Submit & Grade Exam Now</button>
+      </div>
+      <div class="dabeltech-page-footer" style="margin-top:0;padding:0.5rem;">
+        <span>Powered by <strong>DABELTECH</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL 3: UTME PAST QUESTIONS ARCHIVE (READ-ONLY FOR STUDENTS)
+       =================================================================== -->
+  <div class="modal-backdrop hidden" id="questionBankModal">
+    <div class="modal-card modal-large" role="dialog" aria-labelledby="qbankModalTitle">
+      <div class="modal-header">
+        <div>
+          <h3 id="qbankModalTitle">📚 UTME Past Questions Study Archive</h3>
+          <p class="modal-subtitle">Browse verified JAMB UTME past questions across all 19 subjects</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btnCloseQuestionBank">✕</button>
+      </div>
+      <div class="modal-body qbank-modal-body">
+        <div class="qbank-toolbar">
+          <select id="qbankFilterSubject"></select>
+          <input type="search" id="qbankSearchInput" placeholder="Search question text, topic, or UTME year (e.g. 2023)..." />
+        </div>
+
+        <div class="qbank-stats-bar" id="qbankStatsBar"></div>
+        <div class="qbank-Browser-list" id="qbankBrowserList"></div>
+      </div>
+      <div class="dabeltech-page-footer" style="margin-top:0;padding:0.55rem;">
+        <span>Powered by <strong>DABELTECH</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL 4: PAST EXAM ATTEMPTS HISTORY
+       =================================================================== -->
+  <div class="modal-backdrop hidden" id="historyModal">
+    <div class="modal-card modal-large" role="dialog" aria-labelledby="historyModalTitle">
+      <div class="modal-header">
+        <div>
+          <h3 id="historyModalTitle">📊 Candidate Past UTME Attempts & Score History</h3>
+          <p class="modal-subtitle">Saved locally on this workstation</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btnCloseHistory">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="historyListContainer"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnClearHistory">Clear Saved History</button>
+      </div>
+      <div class="dabeltech-page-footer" style="margin-top:0;padding:0.55rem;">
+        <span>Powered by <strong>DABELTECH</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/subjects-config.js"></script>
+  <script src="js/questions-english.js"></script>
+  <script src="js/questions-sciences.js"></script>
+  <script src="js/questions-commercial.js"></script>
+  <script src="js/questions-arts.js"></script>
+  <script src="js/cbt-api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JAMB UTME CBT Admin Backend | PIN Generator & Examination Control Centre</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <!-- TOP OFFICIAL ADMIN HEADER -->
+  <header class="portal-header admin-header no-print">
+    <div class="header-brand">
+      <div class="jamb-crest" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="38" height="38" fill="none">
+          <circle cx="24" cy="24" r="22" fill="#006837" stroke="#eab308" stroke-width="2.5"/>
+          <circle cx="24" cy="24" r="17" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2"/>
+          <path d="M14 29L24 13L34 29H14Z" fill="#eab308" opacity="0.9"/>
+          <rect x="17" y="25" width="14" height="9" rx="1.5" fill="#ffffff"/>
+          <circle cx="24" cy="19" r="3" fill="#ffffff"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <div class="brand-badge-row">
+          <span class="official-pill">CBT CENTRE ADMINISTRATOR BACKEND</span>
+          <span class="cbt-version" id="backendConnectionStatus">● SYNC READY</span>
+        </div>
+        <h1>JAMB UTME EXAMINATION CONTROL & PIN GENERATION PORTAL</h1>
+        <p id="adminHeaderCentreLabel">Centre 02408 — UNILAG CBT Centre, Akoka, Lagos</p>
+      </div>
+    </div>
+
+    <div class="header-nav-actions">
+      <a href="http://localhost:3000/index.html" id="btnOpenCandidatePortalLink" class="ghost-header-btn admin-portal-btn" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        <span>Open Student Portal (Port 3000)</span>
+      </a>
+      <button type="button" class="ghost-header-btn" id="btnRefreshAdminData">
+        <span>🔄 Sync Data</span>
+      </button>
+      <button type="button" class="ghost-header-btn" id="btnLockAdmin">
+        <span>🔒 Lock Admin</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ADMIN LOGIN OVERLAY -->
+  <div class="modal-backdrop hidden" id="adminAuthModal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <div>
+          <h3>🔐 CBT Administrator Authentication</h3>
+          <p class="modal-subtitle">Enter the Centre Master Key to access PIN Generation & Exam Control</p>
+        </div>
+      </div>
+      <form id="formAdminLogin" class="modal-body">
+        <div class="form-group">
+          <label for="inputAdminMasterKey">Administrator Master Key</label>
+          <input type="password" id="inputAdminMasterKey" value="ADMIN2026" placeholder="Default: ADMIN2026" required />
+          <small style="color:#64748b;display:block;margin-top:4px;">Default Master Key: <code>ADMIN2026</code></small>
+        </div>
+        <div id="adminAuthError" class="validation-status invalid hidden" style="margin-bottom:0.75rem;">
+          Invalid Administrator Master Key.
+        </div>
+        <button type="submit" class="btn-primary-large" style="width:100%;justify-content:center;">
+          Unlock CBT Admin Backend
+        </button>
+        <div class="dabeltech-page-footer" style="margin-top:0.85rem;padding-top:0.65rem;">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN ADMIN WORKSPACE -->
+  <div class="admin-layout-grid no-print">
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="admin-nav-group-title">EXAMINATION CONTROL</div>
+      <button type="button" class="admin-nav-btn active" data-admin-tab="tabOverview">
+        <span>📊 1. Executive Dashboard</span>
+      </button>
+      <button type="button" class="admin-nav-btn" data-admin-tab="tabPins">
+        <span>🔑 2. Student PIN Generator</span>
+        <span class="nav-count-pill" id="navPinCount">0</span>
+      </button>
+      <button type="button" class="admin-nav-btn" data-admin-tab="tabScatter">
+        <span>🔀 3. Live Scatter Verifier</span>
+      </button>
+      <button type="button" class="admin-nav-btn" data-admin-tab="tabQuestions">
+        <span>📚 4. Question Bank Manager</span>
+      </button>
+      <button type="button" class="admin-nav-btn" data-admin-tab="tabResults">
+        <span>🏆 5. Results Broadsheet</span>
+        <span class="nav-count-pill" id="navResultCount">0</span>
+      </button>
+      <button type="button" class="admin-nav-btn" data-admin-tab="tabSettings">
+        <span>⚙️ 6. Centre Settings</span>
+      </button>
+
+      <div class="admin-sidebar-info">
+        <strong>Anti-Malpractice Engine</strong>
+        <p>Question numbers (1–60 / 1–40) and Options (A–D) are cryptographically scattered per student seat.</p>
+        <div style="margin-top:0.6rem;padding-top:0.5rem;border-top:1px dashed rgba(255,255,255,0.2);font-size:0.72rem;letter-spacing:0.04em;">
+          Powered by <strong>DABELTECH</strong>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT CONTENT AREA -->
+    <main class="admin-content-area">
+      <!-- =================================================================
+           TAB 1: EXECUTIVE DASHBOARD
+           ================================================================= -->
+      <section class="admin-tab-panel active" id="tabOverview">
+        <div class="admin-section-header">
+          <div>
+            <h2>Executive CBT Centre Dashboard</h2>
+            <p>Real-time summary of generated student PINs, accredited candidates, question bank, and results</p>
+          </div>
+          <div class="admin-quick-btns">
+            <button type="button" class="btn-primary-action" id="btnQuickGoPinGen">+ Generate Student PINs</button>
+            <button type="button" class="btn-secondary" id="btnQuickGoScatter">🔀 Test Multi-Student Question Scatter</button>
+          </div>
+        </div>
+
+        <div class="admin-kpi-grid" id="adminKpiGrid">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="admin-two-col">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Recently Generated Student PINs</h2>
+                <p>Click "Use PIN" to test directly in the Candidate Portal</p>
+              </div>
+            </div>
+            <div class="card-body" id="overviewRecentPinsWrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Recent Candidate Exam Submissions</h2>
+                <p>Latest graded UTME results out of 400</p>
+              </div>
+            </div>
+            <div class="card-body" id="overviewRecentResultsWrap"></div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 2: STUDENT PIN GENERATOR & CANDIDATE ACCREDITATION
+           ================================================================= -->
+      <section class="admin-tab-panel" id="tabPins">
+        <div class="admin-section-header">
+          <div>
+            <h2>🔑 Student Examination PIN Generator & Management</h2>
+            <p>Generate individual or bulk examination PINs for candidates. Each PIN assigns a unique question-scattering seed.</p>
+          </div>
+          <div class="admin-quick-btns">
+            <button type="button" class="btn-secondary" id="btnPrintPinVouchers">🖨️ Print Student PIN Slips</button>
+            <button type="button" class="btn-secondary" id="btnExportPinsCsv">📥 Export PINs (CSV)</button>
+          </div>
+        </div>
+
+        <div class="admin-two-col">
+          <!-- SINGLE CANDIDATE PIN GENERATOR -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge">SINGLE PIN</span>
+              <div>
+                <h2>Generate PIN for a Specific Student</h2>
+                <p>Binds PIN to candidate's JAMB Reg Number, Seat, and 4 UTME Subjects</p>
+              </div>
+            </div>
+            <form class="card-body" id="formGenerateSinglePin">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="singlePinCandName">Candidate Full Name</label>
+                  <input type="text" id="singlePinCandName" placeholder="e.g. OKONKWO EMMANUEL CHUKWU" required />
+                </div>
+                <div class="form-group">
+                  <label for="singlePinRegNo">JAMB Reg Number (Leave blank to auto-generate)</label>
+                  <input type="text" id="singlePinRegNo" placeholder="Auto: e.g. 2026583920BA" maxlength="14" />
+                </div>
+              </div>
+
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label for="singlePinSeatNo">Seat No.</label>
+                  <input type="text" id="singlePinSeatNo" placeholder="e.g. 055" maxlength="4" />
+                </div>
+                <div class="form-group">
+                  <label for="singlePinInst">Target Institution</label>
+                  <select id="singlePinInst">
+                    <option value="UNILAG">UNILAG</option>
+                    <option value="UI">UI Ibadan</option>
+                    <option value="OAU">OAU Ile-Ife</option>
+                    <option value="UNILORIN">UNILORIN</option>
+                    <option value="ABU">ABU Zaria</option>
+                    <option value="UNN">UNN Nsukka</option>
+                    <option value="FUTA">FUTA Akure</option>
+                    <option value="LASU">LASU</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="singlePinMaxAttempts">Max Attempts</label>
+                  <select id="singlePinMaxAttempts">
+                    <option value="1">1 Attempt (Strict Exam)</option>
+                    <option value="3" selected>3 Attempts</option>
+                    <option value="5">5 Attempts</option>
+                    <option value="99">Unlimited Practice</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="singlePinCoursePreset">4-Subject Combination (JAMB Brochure Preset)</label>
+                <select id="singlePinCoursePreset"></select>
+              </div>
+
+              <div class="form-group">
+                <label>Selected 4 UTME Subjects (Use of English is Compulsory):</label>
+                <div class="admin-subj-pills" id="singlePinSubjCheckboxes"></div>
+              </div>
+
+              <button type="submit" class="btn-primary-large" style="width:100%;justify-content:center;">
+                <span>🔑 Generate Unique Student PIN & Paper Seed</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- BULK PIN GENERATOR -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge" style="background:#1d4ed8;">BULK BATCH</span>
+              <div>
+                <h2>Bulk Examination PIN Generator</h2>
+                <p>Generate multiple student PINs at once for an entire CBT examination hall</p>
+              </div>
+            </div>
+            <form class="card-body" id="formGenerateBulkPins">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="bulkPinCount">Number of PINs to Generate</label>
+                  <select id="bulkPinCount">
+                    <option value="5">5 Student PINs</option>
+                    <option value="10" selected>10 Student PINs</option>
+                    <option value="25">25 Student PINs</option>
+                    <option value="50">50 Student PINs</option>
+                    <option value="100">100 Student PINs</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="bulkPinType">PIN Voucher Type</label>
+                  <select id="bulkPinType">
+                    <option value="ASSIGNED">Pre-Assigned Reg No & Seat Batch</option>
+                    <option value="OPEN">Open Scratch-Card Vouchers (Any Student)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="bulkPinPreset">Default 4-Subject Stream</label>
+                  <select id="bulkPinPreset"></select>
+                </div>
+                <div class="form-group">
+                  <label for="bulkPinAttempts">Max Attempts per PIN</label>
+                  <select id="bulkPinAttempts">
+                    <option value="1">1 Attempt</option>
+                    <option value="3" selected>3 Attempts</option>
+                    <option value="10">10 Attempts</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="brochure-note" style="margin-bottom:1rem;">
+                <strong>Anti-Collision Guarantee:</strong> Every PIN generated in this batch receives its own cryptographic <code>paperSeed</code> and <code>SET-XXXX</code> variant code so no two students in the hall have the same question numbering.
+              </div>
+
+              <button type="submit" class="btn-primary-action" style="width:100%;padding:0.8rem;">
+                <span>⚡ Generate Bulk Student PIN Batch Now</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- GENERATED PINS TABLE -->
+        <div class="card mt-16">
+          <div class="card-header" style="justify-content:space-between;align-items:center;flex-wrap:wrap;">
+            <div>
+              <h2>Generated Student PINs Directory (<span id="totalPinsTableCount">0</span>)</h2>
+              <p>Manage, copy, reset, or revoke student examination PINs</p>
+            </div>
+            <div class="review-filters">
+              <select id="filterPinStatus">
+                <option value="ALL">All Statuses</option>
+                <option value="UNUSED">Unused Only</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="REVOKED">Revoked</option>
+              </select>
+              <input type="search" id="searchPinInput" placeholder="Search PIN, Reg No, or Name..." style="padding:0.45rem 0.75rem;border:1px solid #cbd5e1;border-radius:6px;" />
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="slip-table-wrapper" id="pinsTableContainer"></div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 3: LIVE MULTI-STUDENT QUESTION SCATTER VERIFIER
+           ================================================================= -->
+      <section class="admin-tab-panel" id="tabScatter">
+        <div class="admin-section-header">
+          <div>
+            <h2>🔀 Live Multi-Student Question & Option Scattering Verifier</h2>
+            <p>Verify that two or more students writing the same subject at the same time never have the same question numbers or option order</p>
+          </div>
+          <div class="admin-quick-btns">
+            <select id="scatterSubjectSelect" style="padding:0.55rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-weight:600;"></select>
+            <button type="button" class="btn-primary-action" id="btnRunScatterSimulation">
+              🔄 Resimulate 3 Simultaneous Students
+            </button>
+          </div>
+        </div>
+
+        <div class="scatter-metrics-banner" id="scatterMetricsBanner">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="scatter-comparison-grid" id="scatterComparisonGrid">
+          <!-- 3 columns: Student Seat 001 vs Student Seat 002 vs Student Seat 003 -->
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 4: QUESTION BANK MANAGER
+           ================================================================= -->
+      <section class="admin-tab-panel" id="tabQuestions">
+        <div class="admin-section-header">
+          <div>
+            <h2>📚 UTME Past Question Bank & Subject Manager</h2>
+            <p>Manage all 19 official UTME subjects and add new past questions to the central repository</p>
+          </div>
+        </div>
+
+        <div class="admin-two-col">
+          <div class="card">
+            <div class="card-header">
+              <h2>Add New UTME Past Question</h2>
+            </div>
+            <form class="card-body" id="formAdminAddQuestion">
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label for="adminQSubject">UTME Subject</label>
+                  <select id="adminQSubject" required></select>
+                </div>
+                <div class="form-group">
+                  <label for="adminQYear">UTME Year</label>
+                  <input type="text" id="adminQYear" value="UTME 2024" required />
+                </div>
+                <div class="form-group">
+                  <label for="adminQTopic">Topic / Syllabus Section</label>
+                  <input type="text" id="adminQTopic" placeholder="e.g. Lexis & Structure / Mechanics" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="adminQPassage">Reading Passage (Optional — for Comprehension/Cloze)</label>
+                <textarea id="adminQPassage" rows="2" placeholder="Leave blank for standard standalone questions..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="adminQStem">Question Stem</label>
+                <textarea id="adminQStem" rows="2" placeholder="Enter the UTME question stem..." required></textarea>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adminQOptA">Option A</label>
+                  <input type="text" id="adminQOptA" required />
+                </div>
+                <div class="form-group">
+                  <label for="adminQOptB">Option B</label>
+                  <input type="text" id="adminQOptB" required />
+                </div>
+                <div class="form-group">
+                  <label for="adminQOptC">Option C</label>
+                  <input type="text" id="adminQOptC" required />
+                </div>
+                <div class="form-group">
+                  <label for="adminQOptD">Option D</label>
+                  <input type="text" id="adminQOptD" required />
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adminQCorrect">Correct Option</label>
+                  <select id="adminQCorrect">
+                    <option value="0">Option A</option>
+                    <option value="1">Option B</option>
+                    <option value="2">Option C</option>
+                    <option value="3">Option D</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="adminQExplanation">Official Solution / Explanation</label>
+                  <input type="text" id="adminQExplanation" placeholder="Step-by-step explanation..." required />
+                </div>
+              </div>
+              <button type="submit" class="btn-primary-action">Save Question to Central UTME Bank</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>19 UTME Subjects Capacity Overview</h2>
+            </div>
+            <div class="card-body">
+              <div class="slip-table-wrapper" id="adminSubjectSummaryTable"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 5: CANDIDATE RESULTS & MASTER BROADSHEET
+           ================================================================= -->
+      <section class="admin-tab-panel" id="tabResults">
+        <div class="admin-section-header">
+          <div>
+            <h2>🏆 Master Candidate Results Broadsheet</h2>
+            <p>Complete grading log of all submitted UTME examinations across the centre</p>
+          </div>
+          <div class="admin-quick-btns">
+            <button type="button" class="btn-primary-action" id="btnExportResultsCsv">📥 Export Broadsheet (CSV)</button>
+            <button type="button" class="btn-secondary" id="btnPrintBroadsheet">🖨️ Print Broadsheet</button>
+            <button type="button" class="btn-secondary" id="btnClearAllResults">🗑️ Clear Results</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="slip-table-wrapper" id="adminResultsTableWrap"></div>
+          </div>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 6: CBT CENTRE CONFIGURATION & SECURITY SETTINGS
+           ================================================================= -->
+      <section class="admin-tab-panel" id="tabSettings">
+        <div class="admin-section-header">
+          <div>
+            <h2>⚙️ CBT Centre Configuration & Anti-Malpractice Policies</h2>
+            <p>Control PIN enforcement, question scattering, option permutation, and centre metadata</p>
+          </div>
+        </div>
+
+        <div class="card" style="max-width:760px;">
+          <form class="card-body" id="formCentreSettings">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="setCentreCode">CBT Centre Code</label>
+                <input type="text" id="setCentreCode" value="02408" required />
+              </div>
+              <div class="form-group">
+                <label for="setCentreName">CBT Centre Official Name</label>
+                <input type="text" id="setCentreName" value="UNILAG CBT Centre, Akoka, Lagos" required />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="setRequirePin">Candidate PIN Accreditation Policy</label>
+                <select id="setRequirePin">
+                  <option value="true">Strict: Require Valid Admin-Generated PIN to Start Exam</option>
+                  <option value="false">Open: Allow Candidates to Practice Without a PIN</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="setAdminMasterPin">Administrator Master Key</label>
+                <input type="text" id="setAdminMasterPin" value="ADMIN2026" required />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="setScatterQuestions">Question Number Scattering (Anti-Cheat)</label>
+                <select id="setScatterQuestions">
+                  <option value="true">ENABLED — Scatter Question Numbers Uniquely for Every Student</option>
+                  <option value="false">DISABLED — Use Fixed Sequential Order</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="setScatterOptions">Option Letter (A, B, C, D) Scattering</label>
+                <select id="setScatterOptions">
+                  <option value="true">ENABLED — Permute Options (A–D) Uniquely for Every Student</option>
+                  <option value="false">DISABLED — Keep Default Option Order</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="settingsSavedBanner" class="validation-status valid hidden" style="margin-bottom:0.85rem;">
+              ✓ CBT Centre Settings saved and synchronized across all workstations!
+            </div>
+
+            <button type="submit" class="btn-primary-large">Save Centre Configuration</button>
+          </form>
+        </div>
+
+        <div class="dabeltech-page-footer">
+          <span>Powered by <strong>DABELTECH</strong></span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- PRINTABLE PIN VOUCHERS SHEET (Shown when printing PIN slips) -->
+  <section class="printable-vouchers-sheet" id="printableVouchersSheet">
+    <h2 style="text-align:center;margin-bottom:1rem;">JAMB UTME OFFICIAL STUDENT EXAMINATION PIN VOUCHERS</h2>
+    <div class="voucher-cards-grid" id="voucherCardsGrid"></div>
+    <div class="dabeltech-page-footer">
+      <span>Powered by <strong>DABELTECH</strong></span>
+    </div>
+  </section>
+
+  <!-- GLOBAL ADMIN PORTAL FOOTER -->
+  <footer class="portal-global-footer">
+    <div class="portal-global-footer-inner">
+      <span>JAMB UTME CBT Control & PIN Generation Backend</span>
+      <span class="dabeltech-badge">Powered by <strong>DABELTECH</strong></span>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/subjects-config.js"></script>
+  <script src="js/questions-english.js"></script>
+  <script src="js/questions-sciences.js"></script>
+  <script src="js/questions-commercial.js"></script>
+  <script src="js/questions-arts.js"></script>
+  <script src="js/cbt-api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
+
