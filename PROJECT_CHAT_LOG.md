@@ -56,6 +56,15 @@
 - **Modals & Calculator**:
   - Auto-centering, touch-friendly 48px calculator keys, and full-viewport adaptation.
 
+### 7. Vercel Cloud Deployment & 404 Resolution
+- **Issue**: Vercel returned 404: NOT_FOUND because no build step or routing configuration (`vercel.json`) was present to route static pages and serverless API endpoints.
+- **Resolution**:
+  - **`vercel.json`**: Added declarative routing with clean URLs, `/admin` -> `/admin.html` rewrite, `/api/(.*)` -> `/api/index.js` rewrite, and full CORS headers.
+  - **`api/index.js`**: Built a comprehensive Vercel Serverless Function supporting all `/api/*` endpoints (`/api/state`, `/api/pins/verify`, `/api/pins/generate`, `/api/settings`, `/api/results`, `/api/questions`, `/api/admin/login`) with fallback to `/tmp/` and in-memory cache to prevent read-only filesystem errors (`EROFS`).
+  - **`js/cbt-api.js`**: Updated host resolution (`resolveBackendApiUrl` and `getFrontendPortalUrl`) to automatically detect production domains (non-localhost) and use relative paths instead of hardcoded `localhost:4000`/`localhost:3000`.
+  - **`package.json`**: Added `"build": "echo 'Static build ready'"`.
+  - **Local Dual-Port Preserved**: Running `node server.js` or `start-portal.bat` locally still operates seamlessly on ports 3000 & 4000.
+
 ---
 
 ## 🛠️ Architecture & Port Mapping

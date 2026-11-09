@@ -288,8 +288,17 @@
   const FRONTEND_PORT = 3000;
   const BACKEND_PORT = 4000;
 
-  function resolveBackendApiUrl(endpoint) {
+  function isLocalEnvironment() {
     const host = window.location.hostname || "localhost";
+    return host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0";
+  }
+
+  function resolveBackendApiUrl(endpoint) {
+    if (window.location.protocol === "file:") return endpoint;
+    const host = window.location.hostname || "localhost";
+    if (!isLocalEnvironment()) {
+      return endpoint; // In production / Vercel, serve API from the same origin under /api/*
+    }
     const protocol = window.location.protocol === "https:" ? "https:" : "http:";
     return `${protocol}//${host}:${BACKEND_PORT}${endpoint}`;
   }
@@ -299,16 +308,16 @@
       return null; // Immediately use local database when opened via file://
     }
 
-    // Always target the dedicated Backend API Port (4000), with fallback to same-origin
-    const candidateUrls = [resolveBackendApiUrl(endpoint)];
-    if (String(window.location.port) !== String(BACKEND_PORT)) {
-      candidateUrls.push(endpoint);
-    }
+    // On localhost, prioritize Backend Port 4000 with fallback to same-origin.
+    // In production (Vercel / custom domain), use same-origin relative endpoint directly.
+    const candidateUrls = isLocalEnvironment()
+      ? [resolveBackendApiUrl(endpoint), endpoint]
+      : [endpoint];
 
     for (const targetUrl of candidateUrls) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 1800);
+        const timeout = setTimeout(() => controller.abort(), 2500);
         const res = await fetch(targetUrl, {
           ...options,
           headers: {
@@ -335,6 +344,9 @@
         return `index.html${query}`;
       }
       const host = window.location.hostname || "localhost";
+      if (!isLocalEnvironment()) {
+        return `/index.html${query}`;
+      }
       const protocol = window.location.protocol === "https:" ? "https:" : "http:";
       return `${protocol}//${host}:${FRONTEND_PORT}/index.html${query}`;
     },

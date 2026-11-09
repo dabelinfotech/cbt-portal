@@ -65,6 +65,18 @@ npm run start:backend     # Starts only Admin Backend (Port 4000)
 
 ---
 
+## ☁️ Vercel Deployment
+
+The project is preconfigured for zero-configuration 1-click deployment on [Vercel](https://vercel.com):
+
+1. Push or import the repository to Vercel.
+2. Vercel automatically detects `vercel.json` and builds the static assets with `api/index.js` serverless function.
+3. Candidate Portal is served at root `/` (`index.html`).
+4. Admin Control Portal is served at `/admin` (`admin.html`).
+5. All REST APIs are served serverlessly under `/api/*`.
+
+---
+
 ## 🛡️ License
 MIT License. Developed and maintained by **DABELTECH**.
 

@@ -4,6 +4,7 @@
   "description": "Standard JAMB UTME Computer-Based Test (CBT) Portal with Separated Frontend (Port 3000) & Admin Backend (Port 4000)",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'Static build ready'",
     "start": "node server.js",
     "start:frontend": "node frontend-server.js",
     "start:backend": "node backend-server.js"
