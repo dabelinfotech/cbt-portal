@@ -146,8 +146,8 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 200, { ok: true });
   }
 
-  const parsedUrl = url.parse(req.url, true);
-  let pathname = decodeURIComponent(parsedUrl.pathname || "/");
+  const rawPath = (req.url || "/").split("?")[0];
+  let pathname = decodeURIComponent(rawPath || "/");
 
   // Normalize path if /api prefix is stripped or present
   if (!pathname.startsWith("/api") && pathname !== "/") {
@@ -387,3 +387,4 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 500, { ok: false, error: apiErr.message || "Internal Server Error" });
   }
 };
+
