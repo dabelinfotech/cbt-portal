@@ -1022,6 +1022,10 @@
         const targetIdx = parseInt(btn.getAttribute("data-jump-idx"), 10);
         state.currentQuestionIndexBySubject[subjId] = targetIdx;
         renderCurrentQuestion();
+        if (window.innerWidth <= 992) {
+          const targetEl = document.getElementById("questionIndexLabel") || document.getElementById("questionStemText");
+          if (targetEl) targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
   }
@@ -1453,34 +1457,36 @@
     }
 
     container.innerHTML = `
-      <table class="jamb-score-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Candidate</th>
-            <th>4-Subject Combination</th>
-            <th>Aggregate (/400)</th>
-            <th>Time Spent</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${history
-            .map(
-              (item) => `
+      <div class="slip-table-wrapper">
+        <table class="jamb-score-table">
+          <thead>
             <tr>
-              <td>${item.timestamp}</td>
-              <td><strong>${item.candidate.name}</strong><br/><small>${item.candidate.regNo}</small></td>
-              <td>${item.subjectResults
-                .map((s) => `${s.subjectName}: <b>${s.scaledScore100}</b>`)
-                .join(" • ")}</td>
-              <td><strong style="color:#006837;font-size:1rem;">${item.aggregateScaled400} / 400</strong></td>
-              <td>${item.timeSpentFormatted}</td>
+              <th>Date</th>
+              <th>Candidate</th>
+              <th>4-Subject Combination</th>
+              <th>Aggregate (/400)</th>
+              <th>Time Spent</th>
             </tr>
-          `
-            )
-            .join("")}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${history
+              .map(
+                (item) => `
+              <tr>
+                <td>${item.timestamp}</td>
+                <td><strong>${item.candidate.name}</strong><br/><small>${item.candidate.regNo}</small></td>
+                <td>${item.subjectResults
+                  .map((s) => `${s.subjectName}: <b>${s.scaledScore100}</b>`)
+                  .join(" • ")}</td>
+                <td><strong style="color:#006837;font-size:1rem;">${item.aggregateScaled400} / 400</strong></td>
+                <td>${item.timeSpentFormatted}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
     `;
   }
 
@@ -1759,6 +1765,14 @@
     document.getElementById("btnClearOption").addEventListener("click", clearCurrentQuestionChoice);
     document.getElementById("btnFlagCurrent").addEventListener("click", toggleFlagCurrentQuestion);
     document.getElementById("btnShowStudyAnswer").addEventListener("click", revealStudyModeFeedback);
+
+    const btnMobileJump = document.getElementById("btnMobileJumpPalette");
+    if (btnMobileJump) {
+      btnMobileJump.addEventListener("click", () => {
+        const pal = document.getElementById("paletteSubjectTitle") || document.getElementById("questionNumberGrid");
+        if (pal) pal.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
 
     document.getElementById("btnTogglePassage").addEventListener("click", () => {
       state.passageCollapsed = !state.passageCollapsed;

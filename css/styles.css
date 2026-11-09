@@ -2087,30 +2087,7 @@ kbd {
   overflow-y: auto;
 }
 
-/* RESPONSIVE BREAKPOINTS */
-@media (max-width: 1080px) {
-  .setup-grid {
-    grid-template-columns: 1fr;
-  }
-  .exam-workspace-grid {
-    grid-template-columns: 1fr;
-  }
-  .rules-and-keys-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .subject-tabs-bar {
-    grid-template-columns: 1fr 1fr;
-  }
-  .selected-slots-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  .review-options-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* RESPONSIVE BREAKPOINTS (See comprehensive system at end of stylesheet) */
 
 @media print {
   .portal-header,
@@ -2659,7 +2636,64 @@ kbd {
   line-height: 1.45;
 }
 
+/* ============================================================================
+   RESPONSIVE UTILITY CLASSES & MOBILE HELPERS
+   ============================================================================ */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block;
+}
+
+.btn-cbt-palette-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: #0f172a;
+  color: var(--jamb-gold);
+  border: 1.5px solid var(--jamb-gold);
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-cbt-palette-toggle:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* Touch-optimized horizontal table scrollers */
+.slip-table-wrapper,
+.submit-summary-table-wrap,
+#pinsTableContainer,
+#adminResultsTableWrap,
+#overviewRecentPinsWrap,
+#overviewRecentResultsWrap,
+#historyListContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINT 1: TABLETS & SMALL DESKTOPS (<= 1100px)
+   ============================================================================ */
 @media (max-width: 1100px) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+  .exam-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .rules-and-keys-grid {
+    grid-template-columns: 1fr;
+  }
   .admin-layout-grid {
     grid-template-columns: 1fr;
   }
@@ -2668,6 +2702,671 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINT 2: TABLETS & MOBILE DRAWERS (<= 992px)
+   ============================================================================ */
+@media (max-width: 992px) {
+  .mobile-only {
+    display: inline-flex !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Candidate Setup Card */
+  .setup-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  /* Exam Workspace: Question takes top, Palette sits underneath with jump shortcut */
+  .exam-workspace-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+  .question-main-panel {
+    min-height: auto;
+  }
+  .exam-sidebar-panel {
+    order: 2;
+    margin-top: 0.5rem;
+  }
+
+  /* Admin Backend: Transform vertical sidebar into sticky horizontal swipeable nav bar */
+  .admin-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.55rem 0.85rem;
+    gap: 0.45rem;
+    background: #0b1120;
+    position: sticky;
+    top: 0;
+    z-index: 95;
+    border-right: none;
+    border-bottom: 2px solid var(--jamb-gold);
+    scrollbar-width: thin;
+  }
+  .admin-sidebar::-webkit-scrollbar {
+    height: 4px;
+  }
+  .admin-sidebar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  .admin-nav-group-title,
+  .admin-sidebar-info {
+    display: none !important;
+  }
+  .admin-nav-btn {
+    flex-shrink: 0;
+    width: auto;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+  }
+  .admin-content-area {
+    padding: 1.15rem 1rem 2.5rem;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINT 3: MOBILE PHONES & PHABLETS (<= 768px)
+   ============================================================================ */
+@media (max-width: 768px) {
+  /* TOP HEADER COMPACT & ADAPTIVE */
+  .portal-header {
+    padding: 0.55rem 0.85rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .header-brand {
+    gap: 0.55rem;
+  }
+
+  .jamb-crest svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-titles h1 {
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+
+  .brand-titles p {
+    display: none; /* Hide lengthy subtitle on mobile to conserve vital screen height */
+  }
+
+  .brand-badge-row {
+    gap: 0.35rem;
+    margin-bottom: 0;
+  }
+
+  .official-pill {
+    font-size: 0.58rem;
+    padding: 1px 5px;
+  }
+
+  .cbt-version {
+    font-size: 0.62rem;
+  }
+
+  .header-nav-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .ghost-header-btn {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  /* ACTIVE EXAM TOOLBAR ROW */
+  .exam-live-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .variant-pill-box {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .timer-widget {
+    padding: 0.25rem 0.65rem;
+    gap: 0.4rem;
+  }
+
+  .timer-digits {
+    font-size: 1.05rem;
+  }
+
+  .timer-label {
+    font-size: 0.58rem;
+  }
+
+  .exam-Action-tools {
+    gap: 0.35rem;
+  }
+
+  .tool-btn {
+    padding: 0.38rem 0.55rem;
+    font-size: 0.76rem;
+  }
+
+  .btn-submit-exam {
+    padding: 0.42rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  /* MAIN WORKSPACE PADDING */
+  .portal-main {
+    padding: 0.75rem 0.75rem 2rem;
+  }
+
+  /* 4-SUBJECT TABS BAR (2x2 Grid) */
+  .subject-tabs-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+  }
+
+  .subject-tab-btn {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .tab-subject-title {
+    font-size: 0.8rem;
+  }
+
+  .tab-progress-pill {
+    font-size: 0.7rem;
+    padding: 1px 6px;
+  }
+
+  /* SETUP SCREEN CARDS & SLOTS */
+  .selected-slots-banner {
+    padding: 0.75rem;
+  }
+
+  .slots-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .selected-slots-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+  }
+
+  .subject-slot-pill {
+    min-height: 58px;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .slot-subject-name {
+    font-size: 0.78rem;
+  }
+
+  .slot-meta-line {
+    font-size: 0.64rem;
+  }
+
+  .subjects-checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    max-height: 300px;
+  }
+
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .setup-action-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .validation-status {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+
+  .btn-primary-large {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.88rem;
+    padding: 0.8rem 1rem;
+  }
+
+  /* SCREEN 2 BRIEFING */
+  .briefing-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .rules-and-keys-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .start-exam-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .btn-start-utme {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem;
+  }
+
+  /* SCREEN 3 LIVE QUESTION & OPTIONS */
+  .question-top-strip {
+    padding: 0.6rem 0.8rem;
+    gap: 0.45rem;
+  }
+
+  .question-counter-group {
+    gap: 0.35rem;
+  }
+
+  .question-index-label {
+    font-size: 0.88rem;
+  }
+
+  .active-subject-pill,
+  .utme-year-badge,
+  .topic-tag-badge {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .btn-flag-question {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.55rem;
+  }
+
+  .question-body-scroll {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .question-stem-text {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    margin-bottom: 0.9rem;
+  }
+
+  .cbt-option-row {
+    padding: 0.7rem 0.85rem;
+    gap: 0.65rem;
+    min-height: 48px;
+  }
+
+  .option-letter-badge {
+    width: 30px;
+    height: 30px;
+    font-size: 0.82rem;
+  }
+
+  .option-text-label {
+    font-size: 0.9rem;
+  }
+
+  /* LIVE EXAM BOTTOM CONTROLS ON MOBILE */
+  .question-bottom-nav {
+    padding: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .keyboard-hint-strip {
+    display: none;
+  }
+
+  .nav-left-group,
+  .nav-right-group {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .btn-cbt-nav,
+  .btn-cbt-clear,
+  .btn-cbt-study,
+  .btn-cbt-palette-toggle {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.84rem;
+    padding: 0.65rem 0.5rem;
+  }
+
+  /* QUESTION PALETTE GRID */
+  .question-number-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.35rem;
+  }
+
+  .q-grid-btn {
+    height: 38px;
+    font-size: 0.82rem;
+  }
+
+  /* SCREEN 4 RESULT SLIP */
+  .official-result-slip {
+    padding: 1.15rem 0.85rem;
+  }
+
+  .slip-watermark {
+    font-size: 1.85rem;
+    opacity: 0.03;
+  }
+
+  .slip-brand-row {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .slip-titles h2 {
+    font-size: 0.98rem;
+  }
+
+  .slip-titles h3 {
+    font-size: 0.78rem;
+  }
+
+  .slip-aggregate-box {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .agg-score-value {
+    font-size: 1.7rem;
+  }
+
+  .slip-candidate-grid {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    padding: 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .jamb-score-table th,
+  .jamb-score-table td {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  .result-actions-bar {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .result-actions-bar button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .review-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .review-filters {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .review-filters select {
+    width: 100%;
+  }
+
+  /* ADMIN BACKEND ON TABLETS/MOBILES */
+  .admin-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .admin-quick-btns {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .admin-quick-btns button,
+  .admin-quick-btns select {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .admin-kpi-card {
+    padding: 0.85rem 1rem;
+  }
+
+  .kpi-value {
+    font-size: 1.4rem;
+  }
+
+  /* MODALS ON MOBILE */
+  .modal-card {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 92vh;
+    margin: 0.5rem auto;
+  }
+
+  .modal-header {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .modal-body {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.45rem;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+
+  .calculator-window {
+    width: 92vw;
+    max-width: 320px;
+  }
+
+  .calc-key {
+    height: 46px;
+    font-size: 1rem;
+  }
+
+  .qbank-toolbar {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .qbank-toolbar select,
+  .qbank-toolbar input,
+  .qbank-toolbar button {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINT 4: COMPACT SMARTPHONES (<= 480px)
+   ============================================================================ */
+@media (max-width: 480px) {
+  .portal-header {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .header-brand .jamb-crest svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-titles h1 {
+    font-size: 0.8rem;
+  }
+
+  /* Compact variant pill in header */
+  .variant-pill-box {
+    display: none;
+  }
+
+  .candidate-preview-box {
+    gap: 0.6rem;
+    padding: 0.65rem;
+  }
+
+  .candidate-avatar {
+    width: 48px;
+    height: 56px;
+  }
+
+  #candidateInitials {
+    font-size: 1rem;
+  }
+
+  .candidate-meta h3 {
+    font-size: 0.82rem;
+  }
+
+  .pin-input-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .btn-verify-pin {
+    height: 38px;
+    width: 100%;
+    padding: 0.55rem;
+  }
+
+  .selected-slots-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .subject-slot-pill {
+    min-height: 52px;
+    padding: 0.4rem;
+  }
+
+  .slot-subject-name {
+    font-size: 0.74rem;
+  }
+
+  .subjects-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-tabs-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+  }
+
+  .subject-tab-btn {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .tab-subject-title {
+    font-size: 0.74rem;
+  }
+
+  .tab-subject-sub {
+    display: none;
+  }
+
+  .tab-progress-pill {
+    font-size: 0.65rem;
+    padding: 1px 4px;
+  }
+
+  .question-number-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.28rem;
+  }
+
+  .q-grid-btn {
+    height: 36px;
+    font-size: 0.78rem;
+  }
+
+  .briefing-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-window {
+    width: 95vw;
+    max-width: 300px;
+  }
+
+  .calc-key {
+    height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .portal-global-footer {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.74rem;
+  }
+
+  .portal-global-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+
+  .dabeltech-badge {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+  }
+}
+
 
 /* ============================================================================
    POWERED BY DABELTECH — PAGE, SLIP & GLOBAL FOOTER BRANDING
